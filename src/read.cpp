@@ -11,6 +11,8 @@ int main() {
 
     char buffer[4096];
 
+    // TODO: ONLY PARSE HEADER
+
     while (file.read(buffer, sizeof(buffer))) {
         std::streamsize count = file.gcount();
         for (std::streamsize i = 0; i < count; ++i) {
