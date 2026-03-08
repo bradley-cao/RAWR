@@ -2,7 +2,7 @@
 #include <fstream>
 
 int main() {
-    std::ifstream file("image.tiff", std::ios::binary);
+    std::ifstream file("test.NEF", std::ios::binary);
 
     if (!file) {
         std::cerr << "Could not open file\n";
