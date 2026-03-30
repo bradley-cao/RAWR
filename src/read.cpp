@@ -1,6 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstdint>
+
+bool little_endian = false;
+bool big_endian = false;
 
 void read_header(std::ifstream& file) {
     if (!file) {
@@ -8,8 +12,8 @@ void read_header(std::ifstream& file) {
         return;
     }
 
-    char header[8];
-    file.read(header, sizeof(header));
+    uint8_t header[8];
+    file.read(reinterpret_cast<char*>(header), sizeof(header));
 
     if (file.gcount() < static_cast<std::streamsize>(sizeof(header))) {
         std::cerr << "File is too small to contain a valid TIFF header\n";
@@ -18,9 +22,29 @@ void read_header(std::ifstream& file) {
     
     std::cout << "TIFF Header (8 bytes): ";
     for (int i = 0; i < 8; ++i) {
-        std::cout << std::hex << (static_cast<unsigned int>(header[i]) & 0xFF) << " ";
+        std::cout << std::hex << static_cast<unsigned int>(header[i]) << " ";
     }
     std::cout << std::dec << "\n";
+
+    // determine endianness (first two bytes of header should be 49)
+    little_endian = (header[0] == 0x49 && header[1] == 0x49);
+    big_endian = (header[0] == 0x4D && header[1] == 0x4D);
+
+    if (little_endian) {
+        if (header[2] != 0x2A || header[3] != 0x00) {
+            std::cerr << "TIFF Identifier does not match indicated endianness\n";
+            return;
+        }
+        std::cout << "This TIFF file is Little Endian\n";
+    }
+
+    if (big_endian) {
+        if (header[2] != 0x00 || header[3] != 0x2A) {
+            std::cerr << "TIFF Identifier does not match indicated endianness\n";
+            return;
+        }
+        std::cout << "This TIFF file is Big Endian\n";
+    }
 }
 
 void read_full(std::ifstream& file) {
