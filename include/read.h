@@ -9,5 +9,6 @@ extern bool big_endian;
 
 void read_header(std::ifstream& file);
 void process_file(const std::string& filename);
+void parse_ifd(std::ifstream& file, uint8_t offset);
 
 #endif

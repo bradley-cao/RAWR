@@ -23,7 +23,7 @@ void read_header(std::ifstream& file) {
     
     std::cout << "TIFF Header (8 bytes): ";
     for (int i = 0; i < 8; ++i) {
-        std::cout << std::hex << static_cast<unsigned int>(header[i]) << " ";
+        std::cout << std::hex << static_cast<uint>(header[i]) << " ";
     }
     std::cout << std::dec << "\n";
 
@@ -37,6 +37,7 @@ void read_header(std::ifstream& file) {
             return;
         }
         std::cout << "This TIFF file is Little Endian\n";
+        parse_ifd(file, 8); // temporary placeholder 
     }
 
     if (big_endian) {
@@ -45,7 +46,21 @@ void read_header(std::ifstream& file) {
             return;
         }
         std::cout << "This TIFF file is Big Endian\n";
+        parse_ifd(file, 8); // temporary placeholder
     }
+}
+
+void parse_ifd(std::ifstream& file, uint8_t offset) {
+    // IFD Size=2+(Number of Entries×12)+4
+    // subtract 8 from offset, since TIFF header is guaranteed to be 8 bytes
+    offset = offset - 8;
+
+    // first two bytes represent number of directory entries
+    uint8_t num_entries[2];
+    file.read(reinterpret_cast<char*>(num_entries), 2); 
+
+    std::cout << "Number of Directory Entries: " << std::hex 
+              << static_cast<uint>(num_entries[0]) << static_cast<uint>(num_entries[1]) << "\n";
 }
 
 void read_full(std::ifstream& file) {
