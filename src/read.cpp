@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <cstdint>
+#include "read.h"
 
 bool little_endian = false;
 bool big_endian = false;
